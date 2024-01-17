@@ -124,17 +124,18 @@ def recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N(
         list_T.append(T)
         list_h.append(hq)
 
-        # Compute CRT on mod Q,
-        # and mod N. If the result
-        # of h stays the same this
-        # round, that means we
-        # have arrived at the
-        # correct answer.
+
+        # If after we CRT 2 values in 
+        # different rings, the result value
+        # is the same as the one in the large
+        # ring Z/QZ, it means that the value
+        # is < Q in Z and hence they stay the
+        # same after mod Q.
         #
-        # The computed CRT doesn't
-        # mean that the value is
-        # < Q, so we need to compute
-        # r := quotient of that
+        # If we only use the sum formula
+        # to compute CRT, the result
+        # might not < Q, so we need to 
+        # compute r := quotient of that
         # value with Q.
         hN_ = 0
         r = RR(0)
