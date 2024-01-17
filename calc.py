@@ -23,7 +23,7 @@ def ZO_sqrt(
     g2: ZZx, 
     norm_g: int,
     f: ZZx,
-    ub_q_safety_limit: int = 1000000
+    ub_q_safety_limit: int = 50000
 ) -> ZZx:
     # Iterate over primes q,
     # compute sqrt of h(O)^2

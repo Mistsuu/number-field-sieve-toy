@@ -4,7 +4,7 @@ from rings            import ZZ, x, ZZx
 from find_bases       import find_algebraic_factor_bases, find_quadratic_character_bases, find_rational_factor_bases
 from sieve            import find_algebraic_and_rational_smooths
 from calc             import algebraic_legendre_symbols, ZO_sqrt
-from sage.all         import GF, Matrix, gcd, isqrt
+from sage.all         import GF, Matrix, gcd, isqrt, is_square
 
 def factor(
     N: ZZ,
@@ -29,7 +29,10 @@ def factor(
     rbases = find_rational_factor_bases(boundZ)
     abases = find_algebraic_factor_bases(f, boundA)
     qbases = find_quadratic_character_bases(f, boundA, boundQ)
-
+    print(f'[i] #rational_factor_bases = {len(rbases)}')
+    print(f'[i] #algebraic_factor_bases = {len(abases)}')
+    print(f'[i] #quadratic_character_bases = {len(qbases)}')
+    
     # Find pairs (a,b)
     # such that a+bm
     # is smooth in ZZ,
@@ -70,6 +73,7 @@ def factor(
     # quadratic characters
     # encoded as elements
     # modulo 2.
+    print(f'[i] Building GF(2) matrix...')
     M = []
     for smooth, info in smooth_candidates_info.items():
         row = []
@@ -97,10 +101,11 @@ def factor(
     # such that 
     # g^2    := prod(a + bm) is square in Z &
     # h(O)^2 := prod(a + bO) is square in Z[O] (with high probability)
+    print(f'[i] Solving {M_F2.dimensions()[0]}x{M_F2.dimensions()[1]} GF(2) matrix to derive g != h such that g^2 = h^2 mod n...')
     for choose_bit_vec in M_F2.left_kernel().basis():
         g2 = 1
         hO2 = 1
-        norm_hO = 1
+        norm_hO2 = 1
         for choose_bit, smooth_elem in zip(choose_bit_vec, smooth_candidates_info):
             a, b = smooth_elem
             info = smooth_candidates_info[smooth_elem]
@@ -109,27 +114,30 @@ def factor(
                 hO2 *= (a + b*x)
                 hO2 %= f
                 for (r, p), e in zip(abases, info['aexp']):
-                    norm_hO *= p**e
-        norm_hO = isqrt(norm_hO)
-        print(f'[debug] {norm_hO = }')
+                    norm_hO2 *= p**e
+        norm_hO = isqrt(norm_hO2)
+        print(f' L norm(h(O)) = {norm_hO}')
         
         # Since g is just an integer
         # sqrt it is just an easy task.
         g = isqrt(g2)
-        print(f'[i] {g = }')
+        print(f' L {g = }')
 
         # Compute square root in Z[O]
+        # WARNING: This function can take you
+        # forever!
         hO = ZO_sqrt(hO2, norm_hO, f)
         if not hO:
+            print()
             print(f'[i] ------------------------------------------')
             continue
-        print(f'[i] {hO = }')
+        print(f' L h(O) = {hO}')
 
         # Finally, we can map values
         # from Z[O] to Z using map:
         # O -> m.
         h = hO(m)
-        print(f'[i] {h = }')
+        print(f' L {h = }')
 
         # From then, we successfully
         # product g and h such that
@@ -140,6 +148,8 @@ def factor(
             return p
         if 1 < (p := int(gcd(g+h, N))) < N:
             return p
+        print()
+        print(f'[i] ------------------------------------------')
 
     raise ValueError("co cai nit, but run it again maybe ur lucky")
 
