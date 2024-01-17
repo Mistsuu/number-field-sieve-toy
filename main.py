@@ -118,12 +118,12 @@ def factor(
                 for (r, p), e in zip(abases, info['aexp']):
                     norm_hO2 *= p**e
         norm_hO = isqrt(norm_hO2)
-        print(f' L norm(h(O)) = {norm_hO}')
+        print(f' * norm(h(O)) = {norm_hO}')
         
         # Since g is just an integer
         # sqrt it is just an easy task.
         g = isqrt(g2)
-        print(f' L {g = }')
+        print(f' * {g = }')
 
         # Compute square root in Z[O]
         # WARNING: This function can take you
@@ -133,13 +133,13 @@ def factor(
             print()
             print(f'[i] ------------------------------------------')
             continue
-        print(f' L h(O) = {hO}')
+        print(f' * h(O) = {hO}')
 
         # Finally, we can map values
         # from Z[O] to Z using map:
         # O -> m.
         h = hO(m)
-        print(f' L {h = }')
+        print(f' * {h = }')
 
         # From then, we successfully
         # product g and h such that
