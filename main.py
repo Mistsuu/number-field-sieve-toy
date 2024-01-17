@@ -100,12 +100,18 @@ def factor(
     for choose_bit_vec in M_F2.left_kernel().basis():
         g2 = 1
         hO2 = 1
+        norm_hO = 1
         for choose_bit, smooth_elem in zip(choose_bit_vec, smooth_candidates_info):
             a, b = smooth_elem
+            info = smooth_candidates_info[smooth_elem]
             if choose_bit:
                 g2 *= (a + b*m)
                 hO2 *= (a + b*x)
                 hO2 %= f
+                for (r, p), e in zip(abases, info['aexp']):
+                    norm_hO *= p**e
+        norm_hO = isqrt(norm_hO)
+        print(f'[debug] {norm_hO = }')
         
         # Since g is just an integer
         # sqrt it is just an easy task.
@@ -113,7 +119,10 @@ def factor(
         print(f'[i] {g = }')
 
         # Compute square root in Z[O]
-        hO = ZO_sqrt(hO2, f)
+        hO = ZO_sqrt(hO2, norm_hO, f)
+        if not hO:
+            print(f'[i] ------------------------------------------')
+            continue
         print(f'[i] {hO = }')
 
         # Finally, we can map values
