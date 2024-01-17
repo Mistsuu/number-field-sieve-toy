@@ -76,7 +76,6 @@ def find_algebraic_and_rational_smooths(
     sieve_b = 1
     
     while len(smooths) <= target_ncandidates:
-        print(f'[i] {sieve_b=} {len(smooths)}/{target_ncandidates}')
         _smooths_, _rexps_, _aexps_ = \
             find_algebraic_and_rational_smooths_with_known_b(
                 rbases,

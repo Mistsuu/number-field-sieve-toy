@@ -111,8 +111,10 @@ def factor(
                 rbaseexps.append(smooth_info['rexp'])
                 abaseexps.append(smooth_info['aexp'])
 
-        g = recover_rational_square_then_sqrt_it_then_mod_N(rchooses, rbases, rbaseexps, N)
-        h = recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N(achooses, abases, abaseexps, f, N)
+        g = recover_rational_square_then_sqrt_it_then_mod_N(rchooses, rbases, rbaseexps, int(N))
+        h = recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N(achooses, abases, abaseexps, f, m, int(N))
+        if h == None:
+            continue
         if 1 <= (p := int(gcd(g-h, N))) <= N:
             return p
         if 1 <= (p := int(gcd(g+h, N))) <= N:
