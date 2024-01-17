@@ -1,4 +1,5 @@
 from sage.all import legendre_symbol
+from rings    import QQ
 
 def algebraic_legendre_symbols(
     elem: tuple[int, int],
@@ -12,3 +13,14 @@ def algebraic_legendre_symbols(
         qchr.append(legendre_symbol(a + b*s, q))
     return qchr
 
+def norm_map_ZO(
+    a: int, b: int,
+    f
+):
+    raise NotImplementedError("Not implemented out of fear of not fast enough.")
+
+def norm_map_Fpd(
+    a, 
+    p: int, d: int
+):
+    return a ** ((p**d - 1) // (p-1))
