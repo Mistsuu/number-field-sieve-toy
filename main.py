@@ -120,13 +120,13 @@ def factor(
 
         g = recover_rational_square_then_sqrt_it_then_mod_N(rchooses, rbases, rbaseexps, int(N))
         h = recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N(achooses, abases, abaseexps, f, m, int(N))
-        print(f' L g = {g}')
-        print(f' L h = {h}')
+        print(f' * g = {g}')
+        print(f' * h = {h}')
         if h and 1 < (p := int(gcd(g-h, N))) < N:
             return p
         if h and 1 < (p := int(gcd(g+h, N))) < N:
             return p
-        print(f' L -------------------')
+        print(f' * -------------------')
 
     raise ValueError("co cai nit, but run it again maybe ur lucky")
 
