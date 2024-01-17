@@ -71,6 +71,7 @@ def factor(
     # quadratic characters
     # encoded as elements
     # modulo 2.
+    print(f'[i] Building GF(2) matrix...')
     M = []
     for smooth, info in smooth_candidates_info.items():
         row = []
@@ -98,6 +99,7 @@ def factor(
     # such that 
     # a + bm is square in Z &
     # a + bO is square in Z[O] (with high probability)
+    print(f'[i] Solving {M_F2.dimensions()[0]}x{M_F2.dimensions()[1]} GF(2) matrix to derive g != h such that g^2 = h^2 mod n...')
     for choose_bit_vec in M_F2.left_kernel().basis():
         rchooses = []
         achooses = []
@@ -113,12 +115,13 @@ def factor(
 
         g = recover_rational_square_then_sqrt_it_then_mod_N(rchooses, rbases, rbaseexps, int(N))
         h = recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N(achooses, abases, abaseexps, f, m, int(N))
-        if h == None:
-            continue
-        if 1 < (p := int(gcd(g-h, N))) < N:
+        print(f' L g = {g}')
+        print(f' L h = {h}')
+        if h and 1 < (p := int(gcd(g-h, N))) < N:
             return p
-        if 1 < (p := int(gcd(g+h, N))) < N:
+        if h and 1 < (p := int(gcd(g+h, N))) < N:
             return p
+        print(f' L -------------------')
 
     raise ValueError("co cai nit, but run it again maybe ur lucky")
 
