@@ -18,6 +18,8 @@ def factor(
     # f(m) == 0 mod N
     # and deg(f) == d.
     f, m = polysearch(N, d)
+    print(f'[i] {f = }')
+    print(f'[i] {m = }')
 
     # Find 3 types of bases:
     #   - Rational Factor Bases:
