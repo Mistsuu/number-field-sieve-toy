@@ -115,9 +115,9 @@ def factor(
         h = recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N(achooses, abases, abaseexps, f, m, int(N))
         if h == None:
             continue
-        if 1 <= (p := int(gcd(g-h, N))) <= N:
+        if 1 < (p := int(gcd(g-h, N))) < N:
             return p
-        if 1 <= (p := int(gcd(g+h, N))) <= N:
+        if 1 < (p := int(gcd(g+h, N))) < N:
             return p
 
     raise ValueError("co cai nit, but run it again maybe ur lucky")
