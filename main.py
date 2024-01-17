@@ -3,9 +3,8 @@ from polysearch       import polysearch
 from rings            import ZZ, x, ZZx
 from find_bases       import find_algebraic_factor_bases, find_quadratic_character_bases, find_rational_factor_bases
 from sieve            import find_algebraic_and_rational_smooths
-from calc             import algebraic_legendre_symbols
-from sage.all         import GF, Matrix, gcd
-from recover          import recover_rational_square_then_sqrt_it_then_mod_N, recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N
+from calc             import algebraic_legendre_symbols, ZO_sqrt
+from sage.all         import GF, Matrix, gcd, isqrt
 
 def factor(
     N: ZZ,
@@ -93,28 +92,41 @@ def factor(
     # in which the entries are the
     # "choose bits", in which if the
     # entry is 1, that corresponds to
-    # a rational factor in a + bm &
-    # an algebraic factor in a + bO
+    # a rational element a + bm presented in prod(a + bm) &
+    # an algebraic element a + bO presented in prod(a + bO)
     # such that 
-    # a + bm is square in Z &
-    # a + bO is square in Z[O] (with high probability)
+    # g^2    := prod(a + bm) is square in Z &
+    # h(O)^2 := prod(a + bO) is square in Z[O] (with high probability)
     for choose_bit_vec in M_F2.left_kernel().basis():
-        rchooses = []
-        achooses = []
-        rbaseexps = []
-        abaseexps = []
+        g2 = 1
+        hO2 = 1
         for choose_bit, smooth_elem in zip(choose_bit_vec, smooth_candidates_info):
+            a, b = smooth_elem
             if choose_bit:
-                smooth_info = smooth_candidates_info[smooth_elem]
-                rchooses.append(smooth_elem[0] + m*smooth_elem[1])
-                achooses.append(smooth_elem)
-                rbaseexps.append(smooth_info['rexp'])
-                abaseexps.append(smooth_info['aexp'])
+                g2 *= (a + b*m)
+                hO2 *= (a + b*x)
+                hO2 %= f
+        
+        # Since g is just an integer
+        # sqrt it is just an easy task.
+        g = isqrt(g2)
+        print(f'[i] {g = }')
 
-        g = recover_rational_square_then_sqrt_it_then_mod_N(rchooses, rbases, rbaseexps, int(N))
-        h = recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N(achooses, abases, abaseexps, f, m, int(N))
-        if h == None:
-            continue
+        # Compute square root in Z[O]
+        hO = ZO_sqrt(hO2, f)
+        print(f'[i] {hO = }')
+
+        # Finally, we can map values
+        # from Z[O] to Z using map:
+        # O -> m.
+        h = hO(m)
+        print(f'[i] {h = }')
+
+        # From then, we successfully
+        # product g and h such that
+        # g^2 = h^2 mod n, in which
+        # case we can find factors in
+        # 2/3 of the cases!
         if 1 < (p := int(gcd(g-h, N))) < N:
             return p
         if 1 < (p := int(gcd(g+h, N))) < N:
