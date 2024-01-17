@@ -4,7 +4,8 @@ from rings            import ZZ, x, ZZx
 from find_bases       import find_algebraic_factor_bases, find_quadratic_character_bases, find_rational_factor_bases
 from sieve            import find_algebraic_and_rational_smooths
 from calc             import algebraic_legendre_symbols
-from sage.all         import GF, Matrix, isqrt
+from sage.all         import GF, Matrix, gcd
+from recover          import recover_rational_square_then_sqrt_it_then_mod_N, recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N
 
 def factor(
     N: ZZ,
@@ -96,19 +97,28 @@ def factor(
     # an algebraic factor in a + bO
     # such that 
     # a + bm is square in Z &
-    # a + bO is square in Z[O]
-    print(M_F2.left_kernel())
-    # for v in M_F2.left_kernel().basis():
-    #     g2  = 1
-    #     hO2 = 1
-    #     for choosebit, (a, b) in zip(v, smooth_candidates_info):
-    #         if choosebit:
-    #             hO2 *= a + b*x
-    #             hO2 %= f
-    #             g2  *= a + b*m
-    #     g = isqrt(g2)
-    #     exit(-1)
+    # a + bO is square in Z[O] (with high probability)
+    for choose_bit_vec in M_F2.left_kernel().basis():
+        rchooses = []
+        achooses = []
+        rbaseexps = []
+        abaseexps = []
+        for choose_bit, smooth_elem in zip(choose_bit_vec, smooth_candidates_info):
+            if choose_bit:
+                smooth_info = smooth_candidates_info[smooth_elem]
+                rchooses.append(smooth_elem[0] + m*smooth_elem[1])
+                achooses.append(smooth_elem)
+                rbaseexps.append(smooth_info['rexp'])
+                abaseexps.append(smooth_info['aexp'])
 
+        g = recover_rational_square_then_sqrt_it_then_mod_N(rchooses, rbases, rbaseexps, N)
+        h = recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N(achooses, abases, abaseexps, N)
+        if 1 <= (p := int(gcd(g-h, N))) <= N:
+            return p
+        if 1 <= (p := int(gcd(g+h, N))) <= N:
+            return p
+
+    raise ValueError("co cai nit, but run it again maybe ur lucky")
 
 def main(
     args: Args
