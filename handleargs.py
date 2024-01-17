@@ -66,4 +66,5 @@ def check_args(
         raise ValueError(f"Can't find f(x) with d > {args.N.bit_length()}!")
     if args.boundA > args.boundQ:
         raise ValueError(f"Bound q of quadratic characters bases must be larger than bound p of algebraic factor bases (actually it doesn't matter, but this helps implementation looking much cleaner!)")
-    
+    if args.d % 2 == 0:
+        raise ValueError("Current implementation only allows for searching odd degree polynomials, sorry :-( i don't know why, the paper says it...")

@@ -1,7 +1,8 @@
 from sortedcontainers import SortedDict
 from rings            import QQ
+from sage.all         import gcd
 
-def find_algebraic_and_rational_smooths(
+def find_algebraic_and_rational_smooths_with_known_b(
     rbases: list[int],
     abases: list[tuple[int, int]],
     sieve_a_bound: tuple[int, int],
@@ -24,8 +25,8 @@ def find_algebraic_and_rational_smooths(
     rsieve_arr = []
     asieve_arr = []
     for a in range(lb_a, ub_a + 1):
-        rsieve_arr.append(a + b*m)
-        asieve_arr.append(int((-b)**d * f(QQ(-a)/b)))
+        rsieve_arr.append(abs(a + b*m))
+        asieve_arr.append(abs(int((-b)**d * f(QQ(-a)/b))))
 
     # Sieving rational array.
     rexps = [[0] * len(rbases) for _ in range(nelems)]
@@ -53,8 +54,44 @@ def find_algebraic_and_rational_smooths(
     aexps_filtered = []
     for ielem in range(nelems):
         if rsieve_arr[ielem] == asieve_arr[ielem] == 1:
-            smooths.append((ielem + lb_a, b))
-            rexps_filtered.append(rexps[ielem])
-            aexps_filtered.append(aexps[ielem])
+            a = lb_a + ielem
+            if gcd(a, b) == 1:
+                smooths.append((a, b))
+                rexps_filtered.append(rexps[ielem])
+                aexps_filtered.append(aexps[ielem])
 
     return smooths, rexps_filtered, aexps_filtered
+
+
+def find_algebraic_and_rational_smooths(
+    rbases: list[int],
+    abases: list[tuple[int, int]],
+    sieve_a_bound: tuple[int, int],
+    target_ncandidates: int,
+    f, m: int
+):
+    smooths = []
+    rexps   = []
+    aexps   = []
+    sieve_b = 1
+    
+    while len(smooths) <= target_ncandidates:
+        print(f'[i] {sieve_b=} {len(smooths)}/{target_ncandidates}')
+        _smooths_, _rexps_, _aexps_ = \
+            find_algebraic_and_rational_smooths_with_known_b(
+                rbases,
+                abases,
+                sieve_a_bound,
+                sieve_b,
+                f, m
+            )
+        
+        smooths.extend(_smooths_)
+        rexps.extend(_rexps_)
+        aexps.extend(_aexps_)
+
+        # Generate sequence of
+        # b = {1, 2, 3, ...}
+        sieve_b += 1
+
+    return smooths, rexps, aexps
