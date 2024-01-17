@@ -30,6 +30,9 @@ def factor(
     rbases = find_rational_factor_bases(boundZ)
     abases = find_algebraic_factor_bases(f, boundA)
     qbases = find_quadratic_character_bases(f, boundA, boundQ)
+    print(f'[i] #rational_factor_bases = {len(rbases)}')
+    print(f'[i] #algebraic_factor_bases = {len(abases)}')
+    print(f'[i] #quadratic_character_bases = {len(qbases)}')
 
     # Find pairs (a,b)
     # such that a+bm
