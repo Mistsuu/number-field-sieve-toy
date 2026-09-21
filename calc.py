@@ -1,5 +1,6 @@
 from sage.all import legendre_symbol, next_prime, GF, crt
 from rings    import QQ, ZZx
+from utils    import debug
 
 def algebraic_legendre_symbols(
     elem: tuple[int, int],
@@ -58,7 +59,7 @@ def ZO_sqrt(
             norm_g % q == norm_gq or
             norm_g % q == q - norm_gq
         ):
-            print("[warn] Quadratic Character Bases was not big enough to decide whether the values in Z[O] are squares or not! Skipping this psuedo-square element in tears... Or maybe the norm was calculated incorrectly.")
+            debug("[!] Quadratic Character Bases was not big enough to decide whether the values in Z[O] are squares or not! Skipping this psuedo-square element in tears... Or maybe the norm was calculated incorrectly.")
             return None
     
         if norm_g % q != norm_gq:
