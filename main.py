@@ -4,8 +4,12 @@ from rings            import ZZ, x, ZZx
 from find_bases       import find_algebraic_factor_bases, find_quadratic_character_bases, find_rational_factor_bases
 from sieve            import find_algebraic_and_rational_smooths
 from calc             import algebraic_legendre_symbols
+from utils            import debug
 from sage.all         import GF, Matrix, gcd
-from recover          import recover_rational_square_then_sqrt_it_then_mod_N, recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N
+from recover          import (
+    recover_rational_square_then_sqrt_it_then_mod_N,
+    recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N
+)
 
 def factor(
     N: ZZ,
@@ -19,8 +23,8 @@ def factor(
     # f(m) == 0 mod N
     # and deg(f) == d.
     f, m = polysearch(N, d)
-    print(f'[i] {f = }')
-    print(f'[i] {m = }')
+    debug(f'[i] {f = }')
+    debug(f'[i] {m = }')
 
     # Find 3 types of bases:
     #   - Rational Factor Bases:
@@ -32,9 +36,9 @@ def factor(
     rbases = find_rational_factor_bases(boundZ)
     abases = find_algebraic_factor_bases(f, boundA)
     qbases = find_quadratic_character_bases(f, boundA, boundQ)
-    print(f'[i] #rational_factor_bases = {len(rbases)}')
-    print(f'[i] #algebraic_factor_bases = {len(abases)}')
-    print(f'[i] #quadratic_character_bases = {len(qbases)}')
+    debug(f'[i] #rational_factor_bases = {len(rbases)}')
+    debug(f'[i] #algebraic_factor_bases = {len(abases)}')
+    debug(f'[i] #quadratic_character_bases = {len(qbases)}')
 
     # Find pairs (a,b)
     # such that a+bm
@@ -76,7 +80,7 @@ def factor(
     # quadratic characters
     # encoded as elements
     # modulo 2.
-    print(f'[i] Building GF(2) matrix...')
+    debug('[i] Building GF(2) matrix...')
     M = []
     for smooth, info in smooth_candidates_info.items():
         row = []
@@ -104,7 +108,7 @@ def factor(
     # such that 
     # a + bm is square in Z &
     # a + bO is square in Z[O] (with high probability)
-    print(f'[i] Solving {M_F2.dimensions()[0]}x{M_F2.dimensions()[1]} GF(2) matrix to derive g != h such that g^2 = h^2 mod n...')
+    debug(f'[i] Solving {M_F2.dimensions()[0]}x{M_F2.dimensions()[1]} GF(2) matrix to derive g != h such that g^2 = h^2 mod n...')
     for choose_bit_vec in M_F2.left_kernel().basis():
         rchooses = []
         achooses = []
@@ -120,13 +124,13 @@ def factor(
 
         g = recover_rational_square_then_sqrt_it_then_mod_N(rchooses, rbases, rbaseexps, int(N))
         h = recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N(achooses, abases, abaseexps, f, m, int(N))
-        print(f' * g = {g}')
-        print(f' * h = {h}')
+        debug(f' * g = {g}')
+        debug(f' * h = {h}')
         if h and 1 < (p := int(gcd(g-h, N))) < N:
             return p
         if h and 1 < (p := int(gcd(g+h, N))) < N:
             return p
-        print(f' * -------------------')
+        debug(' * -------------------')
 
     raise ValueError("co cai nit, but run it again maybe ur lucky")
 
@@ -140,9 +144,9 @@ def main(
     boundQ = args.boundQ
     sieve_a_bound = (args.lbsieve_a, args.ubsieve_a)
 
-    print(f'[i] Factoring {N=}...')
+    print(f'[i] Factoring {N = }...')
     p = factor(N, d, boundZ, boundA, boundQ, sieve_a_bound)
-    print(f'[i] Found {p=}!')
+    print(f'[i] Found {p = }!')
 
 if __name__ == '__main__':
     args = get_args()

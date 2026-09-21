@@ -1,6 +1,7 @@
 from sage.all import vector, zero_vector, GF, prod, sqrt, prime_range, next_prime
 from rings    import ZZx, ZZ, RR
 from calc     import norm_map_Fpd
+from utils    import debug
 
 def recover_rational_square_then_sqrt_it_then_mod_N(
     rchooses: list[int],  # Note: This variable is not used, but rather put here to fits with the template of recover_xx() functions.
@@ -89,7 +90,7 @@ def recover_algebraic_square_then_sqrt_it_then_do_a_norm_map_then_mod_N(
             norm_hOq_1 == norm_hOq_2 or 
             norm_hOq_1 == q - norm_hOq_2
         ): 
-            print("[warn] Quadratic Character Bases was not big enough to decide whether the values in Z[O] are squares or not! Skipping this psuedo-square element in tears...")
+            debug("[!] Quadratic Character Bases was not big enough to decide whether the values in Z[O] are squares or not! Skipping this psuedo-square element in tears...")
             return None
 
         # Correcting h(O) mod q.
