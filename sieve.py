@@ -34,20 +34,20 @@ def find_algebraic_and_rational_smooths_with_known_b(
     for ibase, p in enumerate(rbases):
         ielem_start = (-b*m - lb_a) % p
         for ielem in range(ielem_start, nelems, p):
-            while rsieve_arr[ielem] % p == 0:
+            while rsieve_arr[ielem] % p == 0 and rsieve_arr[ielem] != 0:
                 rsieve_arr[ielem] //= p
-                rexps[ielem][ibase] += 1        
+                rexps[ielem][ibase] += 1
 
     # Sieving algebraic array.
     aexps = [[0] * len(abases) for _ in range(nelems)]
     for ibase, (r, p) in enumerate(abases):
         ielem_start = (-b*r - lb_a) % p
         for ielem in range(ielem_start, nelems, p):
-            while asieve_arr[ielem] % p == 0:
+            while asieve_arr[ielem] % p == 0 and asieve_arr[ielem] != 0:
                 asieve_arr[ielem] //= p
                 aexps[ielem][ibase] += 1
 
-    # Filter indices i where rsieve_arr[i] 
+    # Filter indices i where rsieve_arr[i]
     # and asieve_arr[i] == 1 at the same
     # time.
     smooths = []
@@ -75,7 +75,7 @@ def find_algebraic_and_rational_smooths(
     rexps   = []
     aexps   = []
     sieve_b = 1
-    
+
     debug(f'[i] Search smooths for sieve_a in {sieve_a_bound}...')
     while len(smooths) <= target_ncandidates:
         debug(f' * {sieve_b = } (smooths collected: {len(smooths)}/{target_ncandidates})')
@@ -87,7 +87,7 @@ def find_algebraic_and_rational_smooths(
                 sieve_b,
                 f, m
             )
-        
+
         smooths.extend(_smooths_)
         rexps.extend(_rexps_)
         aexps.extend(_aexps_)
